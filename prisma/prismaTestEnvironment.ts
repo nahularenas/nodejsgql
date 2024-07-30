@@ -15,6 +15,13 @@ class PrismaTestEnvironment extends NodeEnvironment {
     this.global.process.env.DATABASE_URL = this.dbUrl
 
     this.client = new PrismaClient()
+    // this.client = new PrismaClient({
+    //   datasources: {
+    //     db: {
+    //       url: this.dbUrl
+    //     },
+    //   },
+    // })
   }
 
   async setup() {
@@ -27,31 +34,33 @@ class PrismaTestEnvironment extends NodeEnvironment {
   }
 
   async teardown() {
-    console.log('Tearing down the test environment...')
+    setTimeout(async () => {
+      console.log('Tearing down the test environment...')
 
-    // Drop all tables to reset the schema
-    const tables = await this.client.$queryRaw<
-      Array<{ table_name: string }>
-    >(Prisma.sql`
-      SELECT table_name FROM information_schema.tables WHERE table_schema = 'nodegql_test'
-    `)
+      // Drop all tables to reset the schema
+      const tables = await this.client.$queryRaw<
+        Array<{ table_name: string }>
+      >(Prisma.sql`
+        SELECT table_name FROM information_schema.tables WHERE table_schema = 'nodegql_test'
+      `)
 
-    if (!tables.length) {
-      console.log('No tables found')
-      return
-    }
+      if (!tables.length) {
+        console.log('No tables found')
+        return
+      }
 
-    await this.client.$executeRawUnsafe('SET FOREIGN_KEY_CHECKS = 0;')
+      await this.client.$executeRawUnsafe('SET FOREIGN_KEY_CHECKS = 0;')
 
-    for (const row of tables) {
-      await this.client.$executeRawUnsafe(
-        `DROP TABLE IF EXISTS \`${(row as any).TABLE_NAME}\`;`
-      )
-    }
+      for (const row of tables) {
+        await this.client.$executeRawUnsafe(
+          `DROP TABLE IF EXISTS \`${(row as any).TABLE_NAME}\`;`
+        )
+      }
 
-    await this.client.$executeRawUnsafe('SET FOREIGN_KEY_CHECKS = 1;')
+      await this.client.$executeRawUnsafe('SET FOREIGN_KEY_CHECKS = 1;')
 
-    await this.client.$disconnect()
+      await this.client.$disconnect()
+    }, 5000)
   }
 
   private async ensureDatabaseConnection(retries = 5, delay = 2000) {

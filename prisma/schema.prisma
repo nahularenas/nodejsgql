@@ -18,3 +18,21 @@ model Player {
   name String
   team String
 }
+
+model User {
+  id Int @id @default(autoincrement())
+  email String @unique
+  firstName String
+  lastName String
+  gender String
+  imageUrl String?
+  createdAt DateTime @default(now())
+  groups Group[]
+}
+
+model Group {
+  id Int @id @default(autoincrement())
+  name String @unique
+  description String
+  users User[]
+}

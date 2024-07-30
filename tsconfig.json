@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "types": ["@types/jest", "@quramy/jest-prisma"],
+    "target": "es2016",
+    "module": "commonjs",
+    "rootDir": "./",
+    "baseUrl": "./",
+    "outDir": "./dist",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*", "prisma/*.ts", "tests/**/*"],
+  "exclude": ["node_modules"]
+}

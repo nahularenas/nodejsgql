@@ -22,6 +22,13 @@ class PrismaTestEnvironment extends jest_environment_node_1.default {
         process.env.DATABASE_URL = this.dbUrl;
         this.global.process.env.DATABASE_URL = this.dbUrl;
         this.client = new client_1.PrismaClient();
+        // this.client = new PrismaClient({
+        //   datasources: {
+        //     db: {
+        //       url: this.dbUrl
+        //     },
+        //   },
+        // })
     }
     setup() {
         const _super = Object.create(null, {
@@ -36,21 +43,23 @@ class PrismaTestEnvironment extends jest_environment_node_1.default {
     }
     teardown() {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log('Tearing down the test environment...');
-            // Drop all tables to reset the schema
-            const tables = yield this.client.$queryRaw(client_1.Prisma.sql `
-      SELECT table_name FROM information_schema.tables WHERE table_schema = 'nodegql_test'
-    `);
-            if (!tables.length) {
-                console.log('No tables found');
-                return;
-            }
-            yield this.client.$executeRawUnsafe('SET FOREIGN_KEY_CHECKS = 0;');
-            for (const row of tables) {
-                yield this.client.$executeRawUnsafe(`DROP TABLE IF EXISTS \`${row.TABLE_NAME}\`;`);
-            }
-            yield this.client.$executeRawUnsafe('SET FOREIGN_KEY_CHECKS = 1;');
-            yield this.client.$disconnect();
+            setTimeout(() => __awaiter(this, void 0, void 0, function* () {
+                console.log('Tearing down the test environment...');
+                // Drop all tables to reset the schema
+                const tables = yield this.client.$queryRaw(client_1.Prisma.sql `
+        SELECT table_name FROM information_schema.tables WHERE table_schema = 'nodegql_test'
+      `);
+                if (!tables.length) {
+                    console.log('No tables found');
+                    return;
+                }
+                yield this.client.$executeRawUnsafe('SET FOREIGN_KEY_CHECKS = 0;');
+                for (const row of tables) {
+                    yield this.client.$executeRawUnsafe(`DROP TABLE IF EXISTS \`${row.TABLE_NAME}\`;`);
+                }
+                yield this.client.$executeRawUnsafe('SET FOREIGN_KEY_CHECKS = 1;');
+                yield this.client.$disconnect();
+            }), 5000);
         });
     }
     ensureDatabaseConnection() {

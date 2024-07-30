@@ -8,7 +8,7 @@ export const resolveGetPlayers = (parent: any, args: any) => {
   return getPlayers()
 }
 
-export const resolveGetPlayerById = (parent: any, args: any) => {
+export const resolveGetPlayerById = (_parent: unknown, args: any) => {
   return getPlayerById(args.id)
 }
 
